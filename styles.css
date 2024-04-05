@@ -1,0 +1,45 @@
+body{
+    display: flex;
+    background-color: antiquewhite;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.screen{
+    background-color: white;
+    flex-grow: 0.5;
+    flex-basis: 50px;
+}
+
+.buttons{
+    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    flex:1
+}
+
+.numbers1,
+.numbers2,
+.numbers3,
+.operators,
+.clearButton{
+    display: flex;
+    flex: 1;
+}
+
+button{
+    flex: 1;
+    margin: 10px;
+}
+
+.number{
+    background-color: aqua;
+}
+
+.operator{
+    background-color: aqua;
+}

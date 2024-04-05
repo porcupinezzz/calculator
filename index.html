@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href = "styles.css">
+</head>
+<body>
+    <div class ="container">
+        <div class="screen">....</div>
+        <div class="buttons">
+            <div class="operators">
+                <button class="operator" id="+">+</button>
+                <button class="operator" id="-">-</button>
+                <button class="operator" id="/">/</button>
+                <button class="operator" id="*">*</button>
+            </div>
+            <div class="numbers1">
+                <button class="number" id="0">0</button>
+                <button class="number" id="1">1</button>
+                <button class="number" id="2">2</button>
+                <button class="number" id="3">3</button>
+            </div>
+            <div class="numbers2">
+                <button class="number" id="4">4</button>
+                <button class="number" id="5">5</button>
+                <button class="number" id="6">6</button>
+                <button class="number" id=".">.</button>
+            </div>
+            <div class="numbers3">
+                <button class="number" id="7">7</button>
+                <button class="number" id="8">8</button>
+                <button class="number" id="9">9</button>
+                <button class="equal">=</button>
+            </div>
+            <div class="clearButton">
+                <button class="clear">Clear</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let operators = ["+","-","/","*"];
+        let statement = [];
+        let display = "";
+        let numberHasDecimal = false; //not used yet
+        let mostRecentDigit = ""; // not used yet
+        const operator = document.querySelectorAll(".operator");
+        const number = document.querySelectorAll(".number");
+        const screen = document.querySelector(".screen")
+        //enters operator if it is a valid place to input
+        operator.forEach(element => {
+            element.addEventListener("click", function(e){
+                if (checkValid(e.target.id, "operator")){
+                    numberHasDecimal = false;
+                    statement.push(e.target.id);
+                    display += " "+e.target.id+" ";
+                    screen.textContent = display;
+                }
+                console.log(statement);
+            })
+        });
+        //adds number to screen and appends to the array in an appropriate manner
+        number.forEach(element => {
+            element.addEventListener("click", function(e){
+                //determines placement of number in the statement array
+                if (checkValid(e.target.id, "number")){
+                    if (e.target.id == "."){
+                        numberHasDecimal = true;
+                    }
+                    placeNumber(e.target.id);
+                    display += e.target.id;
+                    screen.textContent = display;
+                    console.log(statement);
+                }
+            })
+        });
+        //clears statement and display when C button is clicked
+        document.querySelector(".clear").addEventListener("click", function(){
+            statement = [];
+            display = "";
+            screen.textContent = "....";
+        })
+        function checkValid(input, type){
+            if (type === "operator"){
+                if (operators.includes(statement.slice(-1)[0]) || mostRecentDigit == "." || statement.length == 0){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            }
+            if (type === "number"){
+                if (statement.slice(-1) == "0" && input != "." || numberHasDecimal && input == "."){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            }
+        }
+        function placeNumber(input){
+            if(operators.includes(statement.slice(-1)[0])||statement.length==0){
+                statement.push(input);
+            }
+            else{
+                statement[statement.length - 1] += input;
+            }
+        }
+        //if equal button is clicked, operation occurs and output shows up on display
+        document.querySelector(".equal").addEventListener("click", function(){
+            //creates temporary array to store plus and minuses in before times and divide get processed
+            if (operators.includes(statement[statement.length - 1])){
+                alert("invalid statement");
+            }
+            else{
+                let excludeNextNum = false;
+                let temp = [];
+                for (let i = 0; i < statement.length; i++){
+                    if (!excludeNextNum){
+                        if (statement[i] != "/" && statement[i] != "*"){
+                            temp.push(statement[i])
+                        }
+                        else if (statement[i] == "/"){
+                            let newNum = Number(temp[temp.length-1]) / Number(statement[i+1])
+                            temp[temp.length - 1] = newNum 
+                            excludeNextNum = true;
+                        }
+                        else{
+                            let newNum = Number(temp[temp.length-1]) * Number(statement[i+1])
+                            temp[temp.length - 1] = newNum 
+                            excludeNextNum = true;
+                        }
+                    }
+                    else{
+                        excludeNextNum=false;
+                    }
+                }
+                //adds and subtracts left to right
+                for (let i = 1; i < temp.length; i++){
+                    if (temp[i] == "+"){
+                        temp[0] = Number(temp[0]) + Number(temp[i+1])
+                    }
+                    if (temp[i] == "-"){
+                        temp[0] = Number(temp[0]) - Number(temp[i+1])
+                    }
+                }
+                display = String(temp[0])
+                screen.textContent = display
+                statement = [display]
+                //finally, checks whether display has decimal to continue operations
+                numberHasDecimal = false;
+                for (let i = 0; i<display.length; i++){
+                    if (display[i] == "."){
+                        numberHasDecimal = true;
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
